@@ -14,25 +14,16 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    - name: Force Install .NET 4.5 Target Pack
+    - name: Download .NET 4.5 Targeting Pack via NuGet Tool
+      run: |
+        nuget install Microsoft.NETFramework.ReferenceAssemblies.net45 -Version 1.0.3 -OutputDirectory target_pack
+        
+    - name: Inject Assemblies to MSBuild System
       shell: powershell
       run: |
-        # Включаем безопасный протокол TLS 1.2, чтобы файлы скачивались без повреждений
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        
-        # Скачиваем официальный пакет сборщика .NET 4.5
-        Invoke-WebRequest -Uri "https://nuget.org" -OutFile "net45.zip"
-        
-        # Распаковываем его встроенными средствами .NET
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory("net45.zip", "net45_extracted")
-        
-        # Создаем системную директорию для MSBuild
         $targetDir = "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"
         if (!(Test-Path $targetDir)) { New-Item -ItemType Directory -Force -Path $targetDir }
-        
-        # Копируем файлы конфигурации фреймворка
-        Copy-Item -Path "net45_extracted\build\.NETFramework\v4.5\*" -Destination $targetDir -Recurse -Force
+        Copy-Item -Path "target_pack\Microsoft.NETFramework.ReferenceAssemblies.net45.1.0.3\build\.NETFramework\v4.5\*" -Destination $targetDir -Recurse -Force
         echo "Successfully injected .NET 4.5 targeting pack!"
 
     - name: Restore NuGet Packages
