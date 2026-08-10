@@ -1,11 +1,11 @@
 name: Build WP8.1 App
 
 on:
-  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-2022 # Актуальный сервер GitHub
+    runs-on: windows-2022
 
     steps:
     - name: Checkout code
@@ -15,11 +15,11 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Restore NuGet Packages
-      run: nuget restore || echo "No NuGet packages to restore"
+      run: nuget restore SeaGateQVM.csproj || echo "No NuGet packages to restore"
 
     - name: Build App with VS Build
       run: |
-        msbuild /p:Configuration=Release /p:Platform="Any CPU"
+        msbuild SeaGateQVM.csproj /p:Configuration=Release /p:Platform="AnyCPU"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
