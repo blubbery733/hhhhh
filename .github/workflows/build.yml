@@ -1,24 +1,25 @@
 name: Build WP8.1 App
 
 on:
-  workflow_dispatch: # Позволит запускать сборку вручную кнопкой
+  workflow_dispatch: # Позволяет запускать сборку вручную кнопкой
 
 jobs:
   build:
-    runs-on: windows-2022 # Старая Windows, где есть нужные компоненты
+    runs-on: windows-2022 # Актуальный сервер GitHub
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Add MSBuild to PATH
+    - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
     - name: Restore NuGet Packages
       run: nuget restore || echo "No NuGet packages to restore"
 
-    - name: Build App
-      run: msbuild /p:Configuration=Release /p:Platform="ARM"
+    - name: Build App with VS Build
+      run: |
+        msbuild /p:Configuration=Release /p:Platform="Any CPU"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
