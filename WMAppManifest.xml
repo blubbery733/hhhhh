@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment"
+  AppPlatformVersion="8.1">
+  <App xmlns="" ProductID="{8b7a7d0e-1d22-4e73-9b0f-7c6a1d7f2a81}"
+       Title="SeaGate QVM"
+       RuntimeType="Silverlight"
+       Version="1.0.0.0"
+       Genre="apps.normal"
+       Author="SeaGate QVM"
+       Description="SeaGate QVM HTML application for Windows Phone 8.1"
+       Publisher="SeaGate QVM">
+    <IconPath IsRelative="true" IsResource="false">Assets/ApplicationIcon.png</IconPath>
+    <Capabilities>
+      <Capability Name="ID_CAP_NETWORKING" />
+      <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
+    </Capabilities>
+    <Tasks>
+      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+    </Tasks>
+    <Tokens>
+      <PrimaryToken TokenID="SeaGateQVMToken" TaskName="_default">
+        <TemplateFlip>
+          <SmallImageURI IsRelative="true" IsResource="false">Assets/Tiles/FlipCycleTileSmall.png</SmallImageURI>
+          <Count>0</Count>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Assets/Tiles/FlipCycleTileMedium.png</BackgroundImageURI>
+          <Title>SeaGate QVM</Title>
+          <DeviceLockImageURI IsRelative="true" IsResource="false">Assets/Tiles/FlipCycleTileMedium.png</DeviceLockImageURI>
+        </TemplateFlip>
+      </PrimaryToken>
+    </Tokens>
+  </App>
+</Deployment>

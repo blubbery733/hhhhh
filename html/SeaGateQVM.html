@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Оптимизация под экран Nokia Lumia 630 (480x854) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SeaGate QVM</title>
+<style>
+  /* --- СБРОС И БАЗОВЫЕ НАСТРОЙКИ --- */
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    font-family: Tahoma, "MS Sans Serif", Geneva, sans-serif;
+    font-size: 11px;
+    color: #000000;
+    overflow: hidden;
+  }
+
+  /* --- ЭКРАН 1: ЧЕРНЫЙ ФОН --- */
+  #stage-black {
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    display: block;
+  }
+
+  /* --- ЭКРАН 2: ЛОГОТИП SEAGATE --- */
+  #stage-logo {
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    display: none;
+    text-align: center;
+  }
+
+  .logo-wrapper {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+  }
+
+  .logo-text {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 38px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #000000;
+  }
+
+  .logo-subtext {
+    font-size: 9px;
+    font-family: Tahoma, sans-serif;
+    letter-spacing: 5px;
+    margin-top: -4px;
+    color: #000000;
+  }
+
+  /* --- ЭКРАН 3 И РЕТРО ОДО ОC (WINDOWS 2000) --- */
+  #stage-win2k {
+    width: 100%;
+    height: 100%;
+    background-color: #008080; /* Классический бирюзовый системный стол Win2k */
+    display: none;
+    position: relative;
+  }
+
+  /* Окно Windows 2000 */
+  .win-window {
+    width: 90%;
+    max-width: 420px;
+    background-color: #C0C0C0;
+    border-top: 2px solid #FFFFFF;
+    border-left: 2px solid #FFFFFF;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 1px 1px 0px #808080 inset;
+  }
+
+  /* Строка заголовка */
+  .win-titlebar {
+    height: 18px;
+    background-color: #000080;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 2px 3px 0px 4px;
+    overflow: hidden;
+  }
+
+  .win-title-text {
+    float: left;
+    white-space: nowrap;
+  }
+
+  .win-controls {
+    float: right;
+  }
+
+  .win-btn {
+    width: 14px;
+    height: 12px;
+    float: left;
+    margin-left: 2px;
+    background-color: #C0C0C0;
+    border-top: 1px solid #FFFFFF;
+    border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+    font-size: 9px;
+    line-height: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .win-body {
+    padding: 12px;
+    color: #000000;
+  }
+
+  /* Классический Progress Bar */
+  .win-progressbar {
+    height: 16px;
+    background-color: #C0C0C0;
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #FFFFFF;
+    border-bottom: 1px solid #FFFFFF;
+    padding: 1px;
+    margin: 10px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .win-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #000080;
+  }
+
+  /* Блочная симуляция сегментов */
+  .win-progress-blocks {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      #000080,
+      #000080 8px,
+      #C0C0C0 8px,
+      #C0C0C0 10px
+    );
+  }
+
+  /* --- ЭКРАН 4: ГЛАВНЫЙ БЕЛЫЙ ЭКРАН (С ПОРТАМИ) --- */
+  #stage-main {
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    display: none;
+    position: relative;
+    text-align: center;
+  }
+
+  .main-header {
+    padding-top: 40px;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  .main-subheader {
+    font-size: 11px;
+    color: #333333;
+    margin-top: 10px;
+    padding: 0 20px;
+  }
+
+  /* Стрелка вниз */
+  .arrow-down {
+    margin: 40px auto 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 35px solid #000000;
+  }
+
+  /* Технические порты */
+  .ports-container {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .port-box {
+    display: inline-block;
+    width: 70px;
+    height: 22px;
+    background-color: #C0C0C0;
+    border: 2px solid #000000;
+    margin: 0 5px;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  .port-box::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background-color: #000000;
+  }
+
+  .port-pin {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #000000;
+    background-color: #C0C0C0;
+    margin: 0 5px;
+    vertical-align: middle;
+  }
+
+  /* Иконка диска */
+  .disk-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #000000;
+    background-color: #DFDFDF;
+    margin: 10px auto;
+    position: relative;
+  }
+  .disk-icon-label {
+    width: 20px;
+    height: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #000000;
+    margin: 2px auto 0 auto;
+  }
+
+  .win-btn-ok {
+    width: 75px;
+    height: 23px;
+    background-color: #C0C0C0;
+    border-top: 2px solid #FFFFFF;
+    border-left: 2px solid #FFFFFF;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    font-family: Tahoma, sans-serif;
+    font-size: 11px;
+    line-height: 19px;
+    text-align: center;
+    margin: 15px auto 0 auto;
+    cursor: pointer;
+  }
+  .win-btn-ok:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #FFFFFF;
+    border-bottom: 2px solid #FFFFFF;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Stage 1: Черный экран -->
+  <div id="stage-black"></div>
+
+  <!-- Stage 2: Белый экран с логотипом -->
+  <div id="stage-logo">
+    <div class="logo-wrapper">
+      <div class="logo-text">SeaGate</div>
+      <div class="logo-subtext">TECHNOLOGY</div>
+    </div>
+  </div>
+
+  <!-- Stage 3: Окна Windows 2000 -->
+  <div id="stage-win2k">
+    <div class="win-window">
+      <div class="win-titlebar">
+        <span class="win-title-text">SeaGate QVM</span>
+        <div class="win-controls">
+          <div class="win-btn">_</div>
+          <div class="win-btn">□</div>
+          <div class="win-btn">✕</div>
+        </div>
+      </div>
+      <div class="win-body" id="win-content">
+        <!-- Динамический контент окон -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 4: Главный экран -->
+  <div id="stage-main">
+    <div class="main-header">SEAGATE QVM</div>
+    <div class="main-subheader">Connect this disk to PC/PBlock or GATE DISK MANAGER</div>
+    <div class="arrow-down"></div>
+    
+    <div class="ports-container">
+      <div class="port-box"></div>
+      <div class="port-pin"></div>
+      <div class="port-pin"></div>
+      <div class="port-box"></div>
+    </div>
+  </div>
+
+<script>
+  // Элементы
+  var stageBlack = document.getElementById('stage-black');
+  var stageLogo = document.getElementById('stage-logo');
+  var stageWin2k = document.getElementById('stage-win2k');
+  var stageMain = document.getElementById('stage-main');
+  var winContent = document.getElementById('win-content');
+
+  var clickCount = 0;
+  var clickTimer = null;
+  var isProcessing = false;
+  var dotsInterval = null;
+
+  // --- ПОСЛЕДОВАТЕЛЬНОСТЬ ЗАПУСКА ---
+  window.onload = function() {
+    // 1. Черный экран 2 секунды
+    setTimeout(function() {
+      stageBlack.style.display = 'none';
+      stageLogo.style.display = 'block';
+
+      // 2. Белый экран с логотипом 3 секунды
+      setTimeout(function() {
+        stageLogo.style.display = 'none';
+        stageWin2k.style.display = 'block';
+        
+        // 3. Первичная загрузка
+        runInitialLoading();
+      }, 3000);
+    }, 2000);
+  };
+
+  // Первичная загрузка окна QVM
+  function runInitialLoading() {
+    winContent.innerHTML = 
+      '<div style="margin-bottom:8px;">Loading data...</div>' +
+      '<div class="win-progressbar">' +
+        '<div id="p-bar" class="win-progress-fill"><div class="win-progress-blocks"></div></div>' +
+      '</div>' +
+      '<div>Please wait...</div>';
+
+    var pBar = document.getElementById('p-bar');
+    var width = 0;
+    var interval = setInterval(function() {
+      width += 5;
+      if (pBar) pBar.style.width = width + '%';
+      if (width >= 100) {
+        clearInterval(interval);
+        // Переход на главный экран
+        stageWin2k.style.display = 'none';
+        stageMain.style.display = 'block';
+        initClickHandlers();
+      }
+    }, 150);
+  }
+
+  // --- ОБРАБОТКА НАЖАТИЙ (2 ИЛИ 3 КЛИКА) ---
+  function initClickHandlers() {
+    stageMain.addEventListener('click', function() {
+      if (isProcessing) return;
+
+      clickCount++;
+      clearTimeout(clickTimer);
+
+      clickTimer = setTimeout(function() {
+        if (clickCount === 2) {
+          isProcessing = true;
+          handleDoubleTap();
+        } else if (clickCount >= 3) {
+          isProcessing = true;
+          handleTripleTap();
+        }
+        clickCount = 0;
+      }, 400); // Порог определения серийных кликов
+    });
+  }
+
+  // Анимация точек (. -> .. -> ...)
+  function startDotsAnimation(elementId, textPrefix) {
+    var state = 1;
+    dotsInterval = setInterval(function() {
+      var dots = '.'.repeat(state);
+      var el = document.getElementById(elementId);
+      if (el) el.innerText = textPrefix + dots;
+      state = (state % 3) + 1;
+    }, 450);
+  }
+
+  function stopDotsAnimation() {
+    if (dotsInterval) clearInterval(dotsInterval);
+  }
+
+  // --- СЦЕНАРИЙ: ТРОЙНОЕ НАЖАТИЕ ---
+  function handleTripleTap() {
+    stageMain.style.display = 'none';
+    stageWin2k.style.display = 'block';
+
+    winContent.innerHTML = '<div id="connect-status">Connecting.</div>';
+    startDotsAnimation('connect-status', 'Connecting');
+
+    // Имитация подключения 3 секунды, затем выводим требуемое
+    setTimeout(function() {
+      stopDotsAnimation();
+      winContent.innerHTML = 
+        '<div style="text-align:center; padding: 10px 0;">' +
+          '<div class="disk-icon"><div class="disk-icon-label"></div></div>' +
+          '<div style="font-weight:bold; font-size:12px; margin-top:5px;">Insert SeaDATAdisk</div>' +
+          '<div class="win-btn-ok" onclick="resetToMain()">OK</div>' +
+        '</div>';
+    }, 3000);
+  }
+
+  // --- СЦЕНАРИЙ: ДВОЙНОЕ НАЖАТИЕ ---
+  function handleDoubleTap() {
+    stageMain.style.display = 'none';
+    stageWin2k.style.display = 'block';
+
+    winContent.innerHTML = '<div id="connect-status">Connecting.</div>';
+    startDotsAnimation('connect-status', 'Connecting');
+
+    setTimeout(function() {
+      stopDotsAnimation();
+      runSearchingData();
+    }, 2500);
+  }
+
+  // Поиск данных 33 секунды
+  function runSearchingData() {
+    var seconds = 0;
+    
+    winContent.innerHTML = 
+      '<div style="margin-bottom:8px;">Searching data...</div>' +
+      '<div class="win-progressbar">' +
+        '<div id="search-bar" class="win-progress-fill"><div class="win-progress-blocks"></div></div>' +
+      '</div>' +
+      '<div>Elapsed time: <span id="timer-text">00:00</span></div>';
+
+    var searchBar = document.getElementById('search-bar');
+    var timerText = document.getElementById('timer-text');
+
+    var searchInterval = setInterval(function() {
+      seconds++;
+      var formattedTime = '00:' + (seconds < 10 ? '0' + seconds : seconds);
+      if (timerText) timerText.innerText = formattedTime;
+      
+      var pct = (seconds / 33) * 100;
+      if (searchBar) searchBar.style.width = pct + '%';
+
+      if (seconds >= 33) {
+        clearInterval(searchInterval);
+        runCopyingData();
+      }
+    }, 1000);
+  }
+
+  // Копирование 5.1 GB (Эстетика Windows 2000)
+  function runCopyingData() {
+    winContent.innerHTML = 
+      '<div style="margin-bottom:4px; font-weight:bold;">Copying data...</div>' +
+      '<div style="margin-bottom:8px; font-size:14px; font-weight:bold;">5.1 GB</div>' +
+      '<div class="win-progressbar">' +
+        '<div id="copy-bar" class="win-progress-fill"><div class="win-progress-blocks"></div></div>' +
+      '</div>' +
+      '<div style="margin-bottom:8px;"><span id="copied-text">0.0 GB</span> of 5.1 GB</div>' +
+      '<div style="border-top:1px solid #808080; padding-top:6px; margin-top:6px; font-size:10px; color:#333;">' +
+        'Source: SeaDATAdisk<br>' +
+        'Destination: PC/PBlock<br>' +
+        'Transfer rate: 12.4 MB/s<br>' +
+        'Status: Copying...' +
+      '</div>';
+
+    var copyBar = document.getElementById('copy-bar');
+    var copiedText = document.getElementById('copied-text');
+    var currentGB = 0.0;
+
+    var copyInterval = setInterval(function() {
+      currentGB += 0.3;
+      if (currentGB > 5.1) currentGB = 5.1;
+      
+      var pct = (currentGB / 5.1) * 100;
+      if (copyBar) copyBar.style.width = pct + '%';
+      if (copiedText) copiedText.innerText = currentGB.toFixed(1) + ' GB';
+
+      if (currentGB >= 5.1) {
+        clearInterval(copyInterval);
+        showCopyComplete();
+      }
+    }, 400);
+  }
+
+  // Завершение загрузки
+  function showCopyComplete() {
+    winContent.innerHTML = 
+      '<div style="padding: 10px 0; text-align:center;">' +
+        '<div style="font-weight:bold; font-size:12px; margin-bottom:5px;">Data transfer complete.</div>' +
+        '<div>5.1 GB successfully transferred.</div>' +
+        '<div class="win-btn-ok" onclick="resetToMain()">OK</div>' +
+      '</div>';
+  }
+
+  // Возврат на главный экран
+  function resetToMain() {
+    stopDotsAnimation();
+    stageWin2k.style.display = 'none';
+    stageMain.style.display = 'block';
+    isProcessing = false;
+    clickCount = 0;
+  }
+</script>
+</body>
+</html>
