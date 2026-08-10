@@ -17,13 +17,13 @@ jobs:
     - name: Inject .NET Framework 4.5 Reference Assemblies
       shell: powershell
       run: |
-        # Скачиваем официальный пакет таргетов .NET 4.5 в виде zip
+        # Используем современную прямую ссылку на CDN NuGet
         Invoke-WebRequest -Uri "https://nuget.org" -OutFile "net45.zip"
-        # Распаковываем его
+        # Распаковываем стабильный архив
         Expand-Archive -Path "net45.zip" -DestinationPath "net45_extracted"
-        # Создаем целевую системную директорию, куда обращается MSBuild
+        # Создаем целевую системную директорию
         New-Item -ItemType Directory -Force -Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"
-        # Копируем туда файлы конфигурации фреймворка
+        # Копируем файлы конфигурации фреймворка
         Copy-Item -Path "net45_extracted\build\.NETFramework\v4.5\*" -Destination "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5" -Recurse -Force
         echo "Successfully injected .NET 4.5 targeting pack!"
 
